@@ -89,7 +89,9 @@
       var viesti = $('#viesti').val();
       $('#viesti').val("");
       if (kayttajanimi != "") {
-        viesti = "<b>" + kayttajanimi + ":</b> " + viesti;
+        if (viesti != "") {
+          viesti = "<b>" + kayttajanimi + ":</b> " + viesti;
+        }
       } else {
         kayttajanimi = arvottunimi;
         console.log(arvottunimi);

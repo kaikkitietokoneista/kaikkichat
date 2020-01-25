@@ -43,6 +43,7 @@ io.on('connection', function(socket){
     socket.disconnect()
   } else {
     luouusirajoitettava(socket.id)
+    console.log(rajoitustaulukkoip);
     console.log('Käyttäjä liittyi.');
     kayttajienmaara = kayttajienmaara + 1;
     io.emit('palvelinviesti', '<center>Uusi käyttäjä liittyi joukkoomme. <br> Paikalla on tällä hetkellä: ' + kayttajienmaara + ' käyttäjää</center>');
