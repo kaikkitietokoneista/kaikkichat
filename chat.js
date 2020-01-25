@@ -2,7 +2,17 @@ var app = require('express')();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 var xss = require('xss');
-var crypto = require('crypto');
+const SocketAntiSpam  = require('socket-anti-spam')
+
+//Antispamin konfigurointi
+const socketAntiSpam = new SocketAntiSpam({
+   banTime:            30,         // Ban time in minutes
+   kickThreshold:      2,          // User gets kicked after this many spam score
+   kickTimesBeforeBan: 3,          // User gets banned after this many kicks
+   banning:            true,       // Uses temp IP banning after kickTimesBeforeBan
+   io:                 socket-io,  // Bind the socket.io variable
+ })
+
 
 /*SIIRRÄ HASHIEN TARKASTUS JA KAKKI MUUKIN FUNCTIONEIKSI */
 
@@ -11,45 +21,24 @@ app.get('/', function(req, res){
 });
 
 var kayttajienmaara = 0;
-var suojaushashit = []
 
 io.on('connection', function(socket){
-  const crypto = require('crypto')
-
-  let generoitustringi = Math.random().toString(36).substring(7);
-  let hash = crypto.createHash('md5').update(generoitustringi).digest("hex")
-  suojaushashit.push({id: socket.id, hash: hash})
-  console.log(suojaushashit);
-
-  socket.emit('hashi', hash);
 
   console.log('Käyttäjä liittyi.');
   kayttajienmaara = kayttajienmaara + 1;
   io.emit('palvelinviesti', '<center>Uusi käyttäjä liittyi joukkoomme. <br> Paikalla on tällä hetkellä: ' + kayttajienmaara + ' käyttäjää</center>');
 
-  socket.on('huoneviesti', (viesti, huone, hash) => {
-    suojaushashit.forEach(function(json) {
-      if (json.hash == hash && json.id == socket.id) { //Tarkastetaan, että hash löytyy
-        if (viesti != "") { //Viesti sisältää nimen joten poista se
-          io.emit('huoneviesti', viesti)
-          //EI TOIMI TÄLLÄ HETKELLÄ: io.to(huone).emit(viesti);
-        }
-        //console.log(viesti);
-        //console.log(huone);
-      }
-    })
+  socket.on('huoneviesti', (viesti, huone) => {
+    if (viesti != "") { //Viesti sisältää nimen joten poista se
+      io.emit('huoneviesti', viesti)
+      //EI TOIMI TÄLLÄ HETKELLÄ: io.to(huone).emit(viesti);
+    }
+    //console.log(viesti);
+    //console.log(huone);
   });
 
   socket.on('disconnect', function() {
     console.log('Käyttäjä poistui.');
-
-    //Ei välttämättä tarvita edes, koska socket.id vaihtuu aina
-    suojaushashit.forEach(function(json) {
-      if (json.id == socket.id) {
-        suojaushashit.splice(suojaushashit.indexOf(json.id), 1);
-        console.log(suojaushashit);
-      }
-    })
 
     kayttajienmaara = kayttajienmaara - 1;
     io.emit('palvelinviesti', '<center>Käyttäjä poistui palvelimelta. <br> Paikalla on tällä hetkellä: ' + kayttajienmaara + ' käyttäjää</center>');
