@@ -12,14 +12,14 @@ var rajoitustaulukkoip = new Object();
 //Ei tarvita var kylmennäip = new Object();
 
 function pyyhirajoitettavaipyksi(ip) {
-  rajoitustaulukko[ip] -= 1;
+  rajoitustaulukkoip[ip] -= 1;
 }
 
 function luouusirajoitettavaip(ip) {
-  if (rajoitustaulukko[ip] == null) {
-    rajoitustaulukko[ip] = 0;
+  if (rajoitustaulukkoip[ip] == null) {
+    rajoitustaulukkoip[ip] = 0;
   } else {
-    rajoitustaulukko[ip] += 1;
+    rajoitustaulukkoip[ip] += 1;
   }
   setTimeout(function() {pyyhirajoitettavaipyksi(ip)}, 60000);
 }
@@ -38,7 +38,7 @@ var kayttajienmaara = 0;
 
 io.on('connection', function(socket){
   var ip = socket.handshake.address;
-  if (rajoitustaulukko[ip] == 3) {
+  if (rajoitustaulukkoip[ip] == 3) {
     socket.emit("Olet rajoitettu.");
     socket.disconnect()
   } else {
