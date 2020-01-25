@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fi" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Chat | kaikkitietokoneista</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.blue-light_blue.min.css" />
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <style media="screen">
+      a {
+        cursor: pointer;
+      }
+
+      .lahetysosio {
+        overflow: hidden;
+        position: fixed;
+        bottom: 0;
+        background-color: lightgrey;
+        width: 100%;
+      }
+
+      #viestit {
+        margin-bottom: 70px;
+      }
+
+      p {
+        padding: 5px;
+      }
+    </style>
+    <script type="text/javascript">
+
+    var arvottunimi = "";
+
+    function arvonimi() {
+      nimiehdotukset = ["Vierailija", "Kyläläinen", "Tarkkailija"];
+
+      var satunnro = Math.floor(Math.random() * 3);
+      arvottunimi = nimiehdotukset[satunnro];
+      return nimiehdotukset[satunnro];
+    }
+
+    var kayttajanimi = arvonimi();
+    var socket = io();
+    moneskoviesti = 0;
+
+
+    socket.on('kirjoittaa', function(kukakirjoittaa) {
+      //$('#kirjoittaa').html(kukakirjoittaa + ' kirjoittaa...')
+    });
+
+    socket.on('lopetti', function() {
+      $('#kirjoittaa').html("")
+    });
+
+    socket.on('huoneviesti', function(viesti) {
+      lisaaviesti(viesti);
+    });
+
+    socket.on('palvelinviesti', function(viesti) {
+      lisaaviesti(viesti);
+    });
+
+        function lahetalopetti() {
+          socket.emit('lopetti', kayttajanimi)
+        }
+
+        function kirjoittaa() {
+          setTimeout(lahetalopetti(), 3000)
+          socket.emit('kirjoittaa', kayttajanimi)
+        }
+
+
+    function vaihdahuone(huoneennimi) {
+      if (huoneennimi == "yleinen") {
+
+      }
+    }
+
+    function lisaaviesti(viesti) {
+      moneskoviesti = moneskoviesti + 1;
+      $('#viestit').append('<p id="idviesti' + moneskoviesti + '">' + viesti + '</p><hr>');
+      console.log('Vastaanotetaan viestä: ' + viesti);
+      document.getElementById("idviesti" +  moneskoviesti).scrollIntoView();
+    }
+
+    function lahetaviesti() {
+      var viesti = $('#viesti').val();
+      $('#viesti').val("");
+      if (kayttajanimi != "") {
+        viesti = "<b>" + kayttajanimi + ":</b> " + viesti;
+      } else {
+        kayttajanimi = arvottunimi;
+        console.log(arvottunimi);
+        viesti = "<b>" + kayttajanimi + ":</b> " + viesti;
+      }
+      socket.emit('huoneviesti', viesti, 'yleinen');
+
+    }
+    </script>
+  </head>
+  <body>
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer">
+      <div class="mdl-layout__drawer">
+        <span class="mdl-layout-title">Asetukset</span>
+        <nav class="mdl-navigation">
+          <div class="mdl-textfield mdl-js-textfield">
+            <input class="mdl-textfield__input" type="text" id="kayttaja">
+            <label class="mdl-textfield__label" for="huone"><script type="text/javascript">document.write(kayttajanimi)</script></label>
+          </div>
+        </nav>
+        <span class="mdl-layout-title">Keskusteluhuone</span>
+        <nav class="mdl-navigation">
+          <a class="mdl-navigation__link" onclick="vaihdahuone('yleinen')">Yleinen</a>
+        </nav>
+      </div>
+      <main class="mdl-layout__content">
+        <div class="page-content">
+          <div id="viestit">
+
+          </div>
+          <div class="lahetysosio">
+            <!--<span id="kirjoittaa"></span><br>-->
+            <div class="mdl-textfield mdl-js-textfield" style="width:60%">
+              <input class="mdl-textfield__input" type="text" id="viesti">
+              <label class="mdl-textfield__label" for="viesti">Viesti...</label>
+            </div>
+            <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id="laheta" onclick="lahetaviesti()">
+              <i class="material-icons">send</i>
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script type="text/javascript">
+      //Käyttäjänimen vaihto
+      $( "#kayttaja" ).change(function() {
+        kayttajanimi = $("#kayttaja").val();
+      });
+
+
+      //Kirjoittaminen
+      $('#viesti').on('input', function() {
+        kirjoittaa()
+      });
+
+      var input = document.getElementById("viesti");
+
+      input.addEventListener("keyup", function(event) {
+        // Number 13 is the "Enter" key on the keyboard
+        if (event.keyCode === 13) {
+          // Cancel the default action, if needed
+          event.preventDefault();
+          // Trigger the button element with a click
+          document.getElementById("laheta").click();
+        }
+      });
+    </script>
+  </body>
+</html>
