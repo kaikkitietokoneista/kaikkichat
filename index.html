@@ -32,6 +32,7 @@
     <script type="text/javascript">
 
     var arvottunimi = "";
+    var hash = "";
 
     function arvonimi() {
       nimiehdotukset = ["Vierailija", "Kyläläinen", "Tarkkailija"];
@@ -56,6 +57,11 @@
 
     socket.on('huoneviesti', function(viesti) {
       lisaaviesti(viesti);
+    });
+
+    socket.on('hashi', function(hashi) {
+      hash = hashi
+      console.log(hash);
     });
 
     socket.on('palvelinviesti', function(viesti) {
@@ -95,7 +101,7 @@
         console.log(arvottunimi);
         viesti = "<b>" + kayttajanimi + ":</b> " + viesti;
       }
-      socket.emit('huoneviesti', viesti, 'yleinen');
+      socket.emit('huoneviesti', viesti, 'yleinen', hash);
 
     }
     </script>
