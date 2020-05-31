@@ -1,0 +1,25 @@
+{
+  "name": "kaikkichat",
+  "version": "1.0.0",
+  "description": "Chat with your friends through kaikkichat.",
+  "main": "chat.js",
+  "scripts": {
+    "test": "node ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kaikkitietokoneista/kaikkichat.git"
+  },
+  "keywords": [
+    "Chat",
+    "Kaikkitietokoneista",
+    "socket.io",
+    "express"
+  ],
+  "author": "Kaikkitietokoneista",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kaikkitietokoneista/kaikkichat/issues"
+  },
+  "homepage": "https://github.com/kaikkitietokoneista/kaikkichat#readme"
+}
