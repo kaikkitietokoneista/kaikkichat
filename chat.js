@@ -55,7 +55,7 @@ io.on('connection', function(socket){
       var id = socket.id;
       if (rajoitustaulukko[id] == -1) {
         if (viesti != "") {
-          io.emit('huoneviesti', viesti)
+          io.emit('huoneviesti', xss(viesti))
           //EI TOIMI TÄLLÄ HETKELLÄ: io.to(huone).emit(viesti);
           luouusirajoitettava(socket.id)
         }
